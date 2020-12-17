@@ -1,0 +1,53 @@
+{layout name='public:layout'}
+
+<h4 class="text-center">用户列表</h4>
+<table class="table table-default table-hover text-center">
+  <tr>
+    <td>ID</td>
+    <td>用户名</td>
+    <td>邮箱</td>
+    <td>手机号</td>
+    <td>注册时间</td>
+    <td>身份</td>
+    <td>状态</td>
+    <td>操作</td>
+  </tr>
+  {volist name='userList' id='user' empty='$empty'}
+  <tr>
+    <td>{$user.id}</td>
+    <td>{$user.name}</td>
+    <td>{$user.email}</td>
+    <td>{$user.mobile}</td>
+    <td>{$user.create_time|date='Y-m-d H:i:s'}</td>
+    <td>{eq name="$user.is_admin" value="1"}超级管理员{else}注册用户{/eq}</td>
+    <td>{eq name="$user.status" value="1"}<span style="color:forestgreen">正常</span>{else/}<span style="color:gray">禁用</span>{/eq}</td>
+    <!-- 非当前用户是不允许编辑其他用户资料  编辑操作需要传参当前用户id-->
+    <!-- {eq name='$user.id' value='$Think.session.admin_id'} -->
+    <!-- {/eq} -->
+    <td>
+      <a class="btn btn-primary btn-sm" role="button" href="{:url('user/userEdit',['id'=>$user.id])}">编辑</a>
+      <!-- id不相等时候元素显示 不能删除自己-->
+      {neq name='$user.id' value='$Think.session.admin_id'}
+      <a class="btn btn-danger btn-sm" role="button" onclick="del();return false">删除</a>
+      {else}
+      <a class="btn btn-default btn-sm" role="button" disabled="disabled">禁止删除</a>
+      {/neq}
+    </td>
+  </tr>
+  {/volist}
+
+</table>
+ 
+<div class="text-center">
+  {$userList|raw}
+</div>
+{neq name='userList' value=''}
+<!-- 如果数据不为空，则显示js -->
+<script>
+  function del() {
+    if (confirm('您是真的要删除吗？') == true) {
+      window.location.href = "{:url('user/doDelete',['id'=>$user.id])}"
+    }
+  }
+</script>
+{/neq}

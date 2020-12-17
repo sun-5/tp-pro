@@ -1,29 +1,32 @@
+{eq name='$Think.session.admin_level' value='1'}
 <ul class="nav nav-pills nav-stacked">
    <li class="nav-header h4">
    系统管理 
    </li>
    <li>
-       <a href=""><span class="glyphicon glyphicon-home">网站管理</span></a>
+       <a href="{:url('site/index')}"><span class="glyphicon glyphicon-home">网站管理</span></a>
    </li>
   </ul>
-
+{/eq}
   <ul class="nav nav-pills nav-stacked">
     <li class="nav-header h4">
      用户管理 
     </li>
     <li>
-        <a href=""><span class="glyphicon glyphicon-user">用户列表</span></a>
+        <a href="{:url('user/userlist')}"><span class="glyphicon glyphicon-user">用户列表</span></a>
     </li>
    </ul>
    <ul class="nav nav-pills nav-stacked">
     <li class="nav-header h4">
        文章管理 
     </li>
+    {eq name='$Think.session.admin_level' value='1'}
     <li>
-        <a href=""><span class="glyphicon glyphicon-list">分类管理</span></a>
+        <a href="{:url('cate/catelist')}"><span class="glyphicon glyphicon-list">分类管理</span></a>
     </li>
+    {/eq}
     <li>
-        <a href=""><span class="glyphicon glyphicon-edit">文章管理</span></a>
+        <a href="{:url('article/articlelist')}"><span class="glyphicon glyphicon-edit">文章管理</span></a>
     </li>
    </ul>
  
