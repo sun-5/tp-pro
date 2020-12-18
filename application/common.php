@@ -11,28 +11,26 @@
 
 // 应用公共文件
 use think\Db;
-//根据用户主键id 查询用户名称
-if (!function_exists('getUserName')) { //防止出问题 被人覆盖
-    function getUserName($id)
-    {
-        return Db::table('wb_user')
-            ->where('id', $id)
-            ->value('name'); //根据字段名 获取某个值
-    }
-}
-
 //过滤文章摘要
 function getArtContent($content)
 {
     return   mb_substr(strip_tags($content), 0, 10) . '···';
 }
 
- 
-if (!function_exists('getCateName')) { 
-    function getCateName($id)
+// 根据user_id查询user表,获取用户的姓名
+if(!function_exists('getUserName'))
+{
+    function getUserName($id)
     {
-        return Db::table('wb_cate')
-            ->where('id', $id)
-            ->value('name');  
+        return Db::table('wb_user')->where('id',$id)->value('name');
+    }
+}
+
+// 根据cate_id查询zh_article_cate表,获取栏目名称
+if(!function_exists('getCateName'))
+{
+    function getCateName($cateId)
+    {
+        return Db::table('wb_cate')->where(['id'=>$cateId])->value('name');
     }
 }

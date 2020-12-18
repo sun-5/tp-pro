@@ -8,65 +8,94 @@
         <div class="page-header">
             <h2>{$art.cate_id|getCateName}</h2>
         </div>
-         
+
         <div>
-            
+
             <div>
                 <h4 class="text-center">{$art.title}</h4>
-                <p class="text-center">发布者：{$art.user_id|getUserName} &nbsp;&nbsp;&nbsp;&nbsp;发布时间:{$art.create_time|date='Y-m-d H:i:s'}&nbsp;&nbsp;&nbsp;&nbsp;阅读量：{$art.pv}</p>
-                
+                <p class="text-center">发布者：{$art.user_id|getUserName}
+                    &nbsp;&nbsp;&nbsp;&nbsp;发布时间:{$art.create_time|date='Y-m-d
+                    H:i:s'}&nbsp;&nbsp;&nbsp;&nbsp;阅读量：{$art.pv}</p>
+
                 <hr>
-<div   class="text-center">
-<button  class="btn btn-primary" type="button" session_id='{$Think.session.user_id}' id="fav" user_id='{$art.user_id}' article_id='{$art.id}'>收藏</button>
-</div>   
+                <div class="text-center">
+                    <button class="btn btn-primary" type="button" session_id='{$Think.session.user_id}' id="fav"
+                        user_id='{$art.user_id}' article_id='{$art.id}'>收藏</button>
+                </div>
             </div>
-       
+
         </div>
-        
+
         <div>{$art.content|raw}</div>
-    
-  
+
     </div>
-        <script>
-            $(function(){
-                $('#fav').click(function(){
-                    var userid = $(this).attr('user_id')
-                    var artid = $(this).attr('article_id')
-                    var sessionid = $(this).attr('session_id')
-                    if(userid&&artid){
-                        $.ajax(
-                            {
-                                type:'get',
-                                url:"{:url('index/index/fav')}",
-                                data:{
-                                    user_id:userid,
-                                    article_id:artid,
-                                    session_id:sessionid,
-                                    time:new Date().getTime(),
-                                },
-                                dataType:'json',
-                                success:function(data){
-                                    switch(data.status){
-                                        case 1:
-                                        $('#fav').attr('class','btn btn-success');
-                                        $('#fav').text(data.message);
-                                        break;
-                                        case 0:
-                                        $('#fav').attr('class','btn btn-default');
-                                        $('#fav').text(data.message);
-                                        break;
-                                        case -1:
-                                        alert(data.message)
-                                        break;
-                                        case -2:
-                                        alert(data.message)
-                                        break;
-                                    }
-                                }
-                            }
-                        )
-                    }
-                })
+    {//添加表单评论功能}
+    <h4>发表评论</h4>
+    <form class="form-horizontal" id='comment'>
+        <input type="hidden" name="article_id" value="{$art.id}">
+        <input type="hidden" name="user_id" value="{$art.user_id}">
+        <textarea name="content" id="" cols="30" rows="10"></textarea>
+        <button type="button" class="btn btn-info" id='submit'>提交</button>
+    </form>
+    <p class='text-success' id='res'>发表成功</p>
+    {//ajax提交评论}
+    {volist name='commentList' id='com' empty='没有评论'}
+    <div>
+        <p>{$com.user_id|getUserName}</p>
+        <p>{$com.content}</p>
+        <p>{$com.create_time}</p>
+        <hr>
+    </div>
+    {/volist}
+    <script>
+        $('#submit').click(function () {
+            $.get("{:url('insertCom')}", $('#comment').serialize(), function (data) {
+                if (data.status == 1) {
+                    $('#res').text(data.msg)
+                } else {
+                    $('#res').text(data.msg)
+                }
             })
-        </script>
+        })
+
+
+        $(function () {
+            $('#fav').click(function () {
+                var userid = $(this).attr('user_id')
+                var artid = $(this).attr('article_id')
+                var sessionid = $(this).attr('session_id')
+                if (userid && artid) {
+                    $.ajax({
+                        type: 'get',
+                        url: "{:url('index/index/fav')}",
+                        data: {
+                            user_id: userid,
+                            article_id: artid,
+                            session_id: sessionid,
+                            time: new Date().getTime(),
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            switch (data.status) {
+                                case 1:
+                                    $('#fav').attr('class', 'btn btn-success');
+                                    $('#fav').text(data.message);
+                                    break;
+                                case 0:
+                                    $('#fav').attr('class', 'btn btn-default');
+                                    $('#fav').text(data.message);
+                                    break;
+                                case -1:
+                                    alert(data.message)
+                                    break;
+                                case -2:
+                                    alert(data.message)
+                                    break;
+                            }
+                        }
+                    })
+                }
+            })
+        })
+    </script>
     {/block}

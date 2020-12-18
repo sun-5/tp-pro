@@ -1,10 +1,10 @@
 <?php
-namespace app\admin\common\model;
+namespace app\common\model;
 use think\Model;
 
-class Site extends Model{
+class Comment extends Model{
     protected $pk = 'id';
-    protected $table = 'wb_site';
+    protected $table = 'wb_comment';
      // 创建时间字段自定义
      protected $createTime = 'create_time'; // 默认create_time
      // 更新时间字段自定义

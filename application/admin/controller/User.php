@@ -34,6 +34,7 @@ class User extends Base{
     }
     //用户列表
     public function userList(){
+        $this->isLogin();
         //1.获取当前用户id 和 当前用户级别
         $data['admin_id']=Session::get('admin_id');
         $data['admin_level']=Session::get('admin_level');
@@ -52,6 +53,7 @@ class User extends Base{
     }
     //渲染编辑用户的界面
     public function userEdit(){
+        $this->isLogin();
         //1.获取当前要编辑的用户的id主键
         $userId=Request::param('id');
         //2.根据主键查询用户

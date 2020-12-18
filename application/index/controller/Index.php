@@ -5,10 +5,12 @@ namespace app\index\controller;
 use app\common\controller\Base; //导入公共控制器
 use app\common\model\ArtCate as ArtCateModel;
 use app\common\model\Article as ArticleModel;
+use app\common\model\Comment;
 use app\common\validate\ArtCate;
 use app\common\validate\Article;
 use think\facade\Request;
 use think\Db;
+use think\db\Where;
 
 class Index extends Base
 {
@@ -116,12 +118,23 @@ class Index extends Base
             $this->view->assign('art', $art);
         }
         $this->view->assign('title', $art['title'] . '详情页');
+
+
+        //添加评论信息
+        $comlis = Comment::all(function ($query) use ($artId) {
+            $query->where('status', 1)
+                ->where('article_id', $artId)
+                ->order('create_time', 'desc');
+        });
+       // halt($comlis);
+        $this->view->assign('commentList', $comlis);
+
         return $this->view->fetch('detail');
     }
     //收藏
     public function fav()
     {
-       // return ['status' => 1, 'message' => '请求成功'];
+        // return ['status' => 1, 'message' => '请求成功'];
         if (!Request::isAjax()) {
             return ['status' => -1, 'message' => '请求类型错误'];
         }
@@ -129,21 +142,37 @@ class Index extends Base
         $data = Request::param();
         //halt($data);//打印数据
         //判断用户是否登录
-        if(empty($data['session_id'])){
-            return ['status'=>-2,'message'=>'请登录后再收藏！'];
+        if (empty($data['session_id'])) {
+            return ['status' => -2, 'message' => '请登录后再收藏！'];
         }
-        $map[]=['user_id','=',$data['user_id']];//查询条件
-        $map[]=['article_id','=',$data['article_id']];
+        $map[] = ['user_id', '=', $data['user_id']]; //查询条件
+        $map[] = ['article_id', '=', $data['article_id']];
         $fav = Db::table('wb_fav')->where($map)->find();
-        if(is_null($fav)){
+        if (is_null($fav)) {
             Db::table('wb_fav')->data([
-                'user_id'=>$data['user_id'],
-                'article_id'=>$data['article_id'],
+                'user_id' => $data['user_id'],
+                'article_id' => $data['article_id'],
             ])->insert();
-            return ['status'=>1,'message'=>'收藏成功'];
-        }else{
+            return ['status' => 1, 'message' => '收藏成功'];
+        } else {
             Db::table('wb_fav')->where($map)->delete();
-            return ['status'=>0,'message'=>'已取消'];
+            return ['status' => 0, 'message' => '已取消'];
+        }
+    }
+    //提交评论
+
+    public function insertCom()
+    {
+        if (Request::isAjax()) {
+            //1.获取评论
+            $data = Request::param();
+            // halt( $data);
+            //2.将用户留言存到表中
+            if (Comment::create($data, true)) {
+                return ['status' => 1, 'msg' => '评论发表成功'];
+            } else {
+                return ['status' => 0, 'msg' => '评论发表失败'];
+            }
         }
     }
 }
